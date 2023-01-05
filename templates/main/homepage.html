@@ -1,0 +1,42 @@
+{% extends  "main/header.html"%}
+
+{% block content %}
+{% load static %}
+
+<div class="container">
+  <div id="map"></div>
+</div>
+
+<style>
+  #map{
+    height: 600px;
+    /* position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%; */
+  }
+</style>
+
+  <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script>
+      // Initialize the map
+      var map = L.map('map').setView([51.505, -0.09], 13);
+      
+      // Try to get the user's location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var lat = position.coords.latitude;
+          var lng = position.coords.longitude;
+          map.setView([lat, lng], 13);
+        });
+      }
+      
+
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+}).addTo(map);
+
+    </script>
+
+{% endblock %}

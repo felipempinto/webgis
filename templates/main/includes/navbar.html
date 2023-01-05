@@ -1,0 +1,43 @@
+{% load static %}
+
+
+<nav>
+  <div class="nav-wrapper blue-grey darken-3">
+    <a href="/" class="brand-logo">
+      <img id="logo" class="responsive-img" src="{% static 'imgs/Logo.png'%}" alt="Logo" style="max-width:100px;">
+    </a>
+
+
+    <ul id="dropdown1" class="dropdown-content">
+      {% if user.is_authenticated %}
+        <!-- <li><a href="/profile/">Profile</a></li> -->
+        <li><a href="/logout/">Logout</a></li>
+      {% else %}
+        <li><a href="/login/">Login</a></li>
+        <li><a href="/register/">Register</a></li>
+      {% endif %}
+    </ul>
+
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <!-- <li><a href="">Land Cover</a></li>
+      <li><a href="">Image classification</a></li> -->
+      <li>
+        <a class="dropdown-trigger" href="#!" data-target="dropdown1">
+          <i class="material-icons right">arrow_drop_down_circle</i>
+        </a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const elemsDropdown = document.querySelectorAll(".dropdown-trigger");
+  const instancesDropdown = M.Dropdown.init(elemsDropdown,{
+    coverTrigger:false,
+    constrainWidth:false,
+    alignment:'right',
+  }
+  );
+</script>
+      

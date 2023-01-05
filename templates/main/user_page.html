@@ -1,0 +1,26 @@
+
+
+{% extends  "main/header.html"%}
+
+{% block content %}
+{% load static %}
+
+<div class="container">
+    <!-- Row for the user's username and email -->
+    <div class="row">
+      <div class="col s12">
+        <h1 class="header">{{ user.username }}</h1>
+        <p class="grey-text text-darken-1">Email: {{ user.email }}</p>
+      </div>
+    </div>
+    <!-- Row for the user's additional information -->
+    <div class="row">
+      <div class="col s12">
+        {% if profile %}
+          <p class="grey-text text-darken-1">Additional information: {{ profile.additional_info }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
