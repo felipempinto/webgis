@@ -18,6 +18,51 @@
       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
+   <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    
+    main {
+      flex: 1 0 auto;
+    }
+  
+    nav {
+      background-color: bisque;
+      color: black;
+    }
+  
+    footer {
+      background-color:bisque; 
+      color: black;
+    }
+    .li-footer {
+      display:inline;
+    }
+    .li-drop{
+      background-color: beige;
+    }
+
+    .img-footer{
+      width:25px;
+      height:25px;
+    }
+    
+    .btn{
+      background-color: rgb(248, 166, 66);
+      color: black;
+    }
+    .input-field{
+      background-color: bisque;
+      color: black;
+      border: 2px solid;
+      border-radius: 25px;
+    }
+
+    
+  </style>
 </head>
 <body>
 {% include "main/includes/navbar.html" %}
@@ -31,16 +76,6 @@
   
   {% include "main/includes/footer.html" %}
 
-
-<style>body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-  }
-  
-  main {
-    flex: 1 0 auto;
-  }
-</style>
 </body>
+
 </html>

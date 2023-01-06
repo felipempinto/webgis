@@ -29,7 +29,10 @@
           var lat = position.coords.latitude;
           var lng = position.coords.longitude;
           map.setView([lat, lng], 13);
+          var marker = L.marker([lat, lng]).addTo(map);
+          marker.bindPopup("<b>You are here!</b><br>").openPopup();
         });
+        
       }
       
 

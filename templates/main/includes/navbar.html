@@ -2,30 +2,21 @@
 
 
 <nav>
-  <div class="nav-wrapper blue-grey darken-3">
+  <div class="nav-wrapper">
     <a href="/" class="brand-logo">
       <img id="logo" class="responsive-img" src="{% static 'imgs/Logo.png'%}" alt="Logo" style="max-width:100px;">
     </a>
 
-
-    <ul id="dropdown1" class="dropdown-content">
-      {% if user.is_authenticated %}
-        <!-- <li><a href="/profile/">Profile</a></li> -->
-        <li><a href="/logout/">Logout</a></li>
-      {% else %}
-        <li><a href="/login/">Login</a></li>
-        <li><a href="/register/">Register</a></li>
-      {% endif %}
-    </ul>
-
     <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <!-- <li><a href="">Land Cover</a></li>
-      <li><a href="">Image classification</a></li> -->
-      <li>
-        <a class="dropdown-trigger" href="#!" data-target="dropdown1">
-          <i class="material-icons right">arrow_drop_down_circle</i>
-        </a>
-      </li>
+      {% if user.is_authenticated %}
+        
+        <li class="li-drop"><a style="color: black;" href="/user/">Datasets</a></li>
+        <li class="li-drop"><a style="color: black;" href="/user/">My infos</a></li>
+        <li class="li-drop"><a style="color: black;" href="/logout/">Logout</a></li>
+      {% else %}
+        <li class="li-drop"><a style="color: black;" href="/login/">Login</a></li>
+        <li class="li-drop"><a style="color: black;" href="/register/">Register</a></li>
+      {% endif %}
 
     </ul>
   </div>
