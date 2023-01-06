@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
-                ('file', models.FileField(blank=True, null=True, upload_to=main.models.upload_to, validators=[main.models.validate_file_extension])),
+                ('file', models.FileField(blank=True, null=True, upload_to=main.models.upload_to, validators=[main.models.validate_file_extension_vector])),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('users', models.ManyToManyField(related_name='vectors', to=settings.AUTH_USER_MODEL)),
             ],

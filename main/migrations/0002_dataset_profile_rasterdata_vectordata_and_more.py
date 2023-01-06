@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='raster',
             name='file',
-            field=models.FileField(blank=True, null=True, upload_to=functools.partial(main.models.upload_to, *(), **{'path': 'vector'}), validators=[main.models.validate_file_extension]),
+            field=models.FileField(blank=True, null=True, upload_to=functools.partial(main.models.upload_to, *(), **{'path': 'vector'}), validators=[main.models.validate_file_extension_raster]),
         ),
         migrations.AddField(
             model_name='vector',
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vector',
             name='file',
-            field=models.FileField(blank=True, null=True, upload_to=functools.partial(main.models.upload_to, *(), **{'path': 'vector'}), validators=[main.models.validate_file_extension]),
+            field=models.FileField(blank=True, null=True, upload_to=functools.partial(main.models.upload_to, *(), **{'path': 'vector'}), validators=[main.models.validate_file_extension_vector]),
         ),
         migrations.DeleteModel(
             name='VectorDataPoint',
