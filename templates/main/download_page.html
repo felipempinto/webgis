@@ -28,6 +28,9 @@
                 <th>Name</th>
                 <th>Download</th>
                 <th>Created at</th>
+                {% if dataname != "other" %}
+                <th>Create View</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -36,6 +39,9 @@
                   <td>{{ dataset.name }}</td>
                   <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
                   <td>{{ dataset.get_created_at }}</td>
+                  {% if dataname != "other" %}
+                    <td><button>Create</button></td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </tbody>

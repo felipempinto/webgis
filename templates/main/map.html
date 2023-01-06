@@ -1,0 +1,77 @@
+{% extends  "main/header.html"%}
+
+{% block content %}
+{% load static %}
+
+<!-- Create a container element for the map -->
+<div id="map" style="height: 100%; width: 100%"></div>
+
+<!-- Add a button to go back to the homepage -->
+<button onclick="goBack()">Go Back</button>
+
+<script>
+  // Initialize the map
+  var map = L.map('map').setView([0, 0], 2);
+
+  // Add a base layer to the map
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+  }).addTo(map);
+
+  // Add the Leaflet Draw plugin to the map
+  var drawControl = new L.Control.Draw({
+    draw: {
+      polygon: true,
+      polyline: true,
+      rectangle: true,
+      circle: true,
+      marker: true
+    },
+    edit: {
+      featureGroup: drawnItems
+    }
+  }).addTo(map);
+
+  // Create a feature group to store the drawn items
+  var drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+
+  // Add a listener for when a new item is drawn on the map
+  map.on(L.Draw.Event.CREATED, function (event) {
+    var layer = event.layer;
+    drawnItems.addLayer(layer);
+  });
+
+  // Add a listener for when an item is edited on the map
+  map.on(L.Draw.Event.EDITED, function (event) {
+    var layers = event.layers;
+    layers.eachLayer(function (layer) {
+      // Do something with the edited layer
+    });
+  });
+
+  // Add a listener for when an item is deleted from the map
+  map.on(L.Draw.Event.DELETED, function (event) {
+    var layers = event.layers;
+    layers.eachLayer(function (layer) {
+      // Do something with the deleted layer
+    });
+  });
+
+  // Add a listener for when the save button is clicked
+  document.getElementById('save-button').addEventListener('click', function() {
+    // Save the drawn items to the database using Django
+    saveDrawnItems();
+  });
+
+  // Define the goBack function
+  function goBack() {
+    window.history.back();
+  }
+</script>
+
+<!-- Add a save button to the page -->
+<button id="save-button">Save</button>
+
+
+{% endblock %}

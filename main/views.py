@@ -91,3 +91,10 @@ def download_page(request):
             }
             )
 
+
+
+def map(request):
+    return render(
+        request,
+        template_name='main/map.html'
+    )
