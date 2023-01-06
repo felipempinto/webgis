@@ -53,7 +53,7 @@ class Dataset(models.Model):
     user = models.ForeignKey(User,related_name = 'owner_dataset',on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_to_path('dataset'),null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def get_created_at(self):
         return humanize.naturaltime(self.created_at)
 
@@ -92,6 +92,3 @@ class RasterData(models.Model):
 
     
     
-
-
-

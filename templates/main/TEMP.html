@@ -1,0 +1,85 @@
+<div id="raster-tab" class="col s12">
+    {% if raster_datasets %}
+        <table  class="striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Download</th>
+              <th>Created at</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dataset in raster_datasets %}
+              <tr>
+                <td>{{ dataset.name }}</td>
+                <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
+                <td>{{ dataset.get_created_at }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>You have no raster datasets.</p>
+      {% endif %}
+  </div>
+
+  <!-- Tab 2 content -->
+  <div id="vector-tab" class="col s12">
+    {% if vector_datasets %}
+          <table class="striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Download</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for dataset in vector_datasets %}
+                <tr>
+                  <td>{{ dataset.name }}</td>
+                  <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
+                  <td>{{ dataset.get_created_at }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>You have no vector datasets.</p>
+        {% endif %}
+  </div>
+
+  <div id="other-tab" class="col s12">
+    {% if other_datasets %}
+          <table class="striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Download</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for dataset in other_datasets %}
+                <tr>
+                  <td>{{ dataset.name }}</td>
+                  <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
+                  <td>{{ dataset.get_created_at }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>You have no vector datasets.</p>
+        {% endif %}
+  </div>
+
+
+
+
+
+
+
+
+
+

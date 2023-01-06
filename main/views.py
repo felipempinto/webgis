@@ -74,13 +74,20 @@ def download_page(request):
     vector_datasets = Vector.objects.filter(user=user)
     other_datasets = Dataset.objects.filter(user=user)
 
+    data = {
+        "raster": raster_datasets, 
+        "vector": vector_datasets,
+        'other':other_datasets
+    }
+
     return render(
             request, 
             "main/download_page.html", 
             {
-                "raster_datasets": raster_datasets, 
-                "vector_datasets": vector_datasets,
-                'other_datasets':other_datasets
+                # "raster_datasets": raster_datasets, 
+                # "vector_datasets": vector_datasets,
+                # 'other_datasets':other_datasets
+                'data':data
             }
             )
 
