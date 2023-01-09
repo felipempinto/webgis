@@ -6,6 +6,9 @@ from django.conf import settings
 from django.forms import ValidationError
 from django.template.defaultfilters import filesizeformat
 from django.contrib.humanize.templatetags import humanize
+from django.contrib.gis.gdal import DataSource
+from django.core.files.storage import default_storage,get_storage_class
+from django.contrib.gis.geos import GEOSGeometry
 
 from functools import partial
 import os
@@ -67,6 +70,9 @@ class Vector(models.Model):
     def get_created_at(self):
         return humanize.naturaltime(self.created_at)
 
+    def __str__(self):
+        return self.file.name
+
 class Raster(models.Model):
     name = models.CharField(max_length=50)
     user = models.ForeignKey(User,related_name = 'owner_raster',on_delete=models.CASCADE)
@@ -78,17 +84,26 @@ class Raster(models.Model):
         return humanize.naturaltime(self.created_at)
 
 class VectorData(models.Model):
-    file = models.OneToOneField(Vector,on_delete=models.CASCADE)
+    # file = models.OneToOneField(Vector,on_delete=models.CASCADE)
+    file = models.ForeignKey(Vector,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     geom = modelsgis.GeometryField()
     properties = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'{self.user} => {self.file}'
+
 class RasterData(models.Model):
-    file = models.OneToOneField(Raster,on_delete=models.CASCADE)
+    # file = models.OneToOneField(Raster,on_delete=models.CASCADE)
+    file = models.ForeignKey(Raster,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     path = models.CharField(max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
 
     
     

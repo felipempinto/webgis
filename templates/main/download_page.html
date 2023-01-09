@@ -40,7 +40,11 @@
                   <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
                   <td>{{ dataset.get_created_at }}</td>
                   {% if dataname != "other" %}
-                    <td><button>Create</button></td>
+                  <td>
+                    <a href="{% url 'main:createdata' %}?{{dataname}}_id={{dataset.id}}">Create data</a>
+                    
+                  </td>
+                    <!-- <td><a class="black waves-effect waves-light btn-small">Create</a></td> -->
                   {% endif %}
                 </tr>
               {% endfor %}

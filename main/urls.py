@@ -19,7 +19,8 @@ urlpatterns = [
     path('logout/',views.logout_request,name='logout'),
     path("user/",views.user,name='user'),
     path("download/",views.download_page,name='download'),
-    path("map/",views.map,name='map')
+    path("map/",views.map,name='map'),
+    path("createdata/",views.createdata,name='createdata')
     
 ]+ users_page
 
