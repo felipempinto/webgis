@@ -10,7 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.db.models.functions import Centroid
 
 from .models import RasterData,VectorData,Raster,Vector,Dataset
-import json
+import json,os
 
 def homepage(request):
     return render(request,
@@ -71,12 +71,27 @@ def download_page(request):
             {'data':data}
             )
 
-
-
+@login_required
 def map(request):
+    vector = Vector.objects.filter(user=request.user)
 
-    vector_data = VectorData.objects.all()
+    dataset = {}
+    for f in vector:
+        vector_data2 = VectorData.objects.filter(user=request.user).filter(file=f)
+        dataset[f.file] = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": json.loads(data.properties),
+            "geometry": json.loads(data.geom.geojson)
+        }
+        for data in vector_data2
+    ]
+    }
+    
 
+    vector_data = VectorData.objects.filter(user=request.user)
     geojson = {
         "type": "FeatureCollection",
         "features": [
@@ -93,7 +108,8 @@ def map(request):
         request,
         template_name='main/map.html',
         context={
-            'geojson':json.dumps(geojson)
+            'geojson':json.dumps(geojson),
+            'dataset':dataset,
         }
     )
 

@@ -72,7 +72,7 @@ class Vector(models.Model):
         return humanize.naturaltime(self.created_at)
 
     def __str__(self):
-        return f'{self.name}-{self.file.name}-{self.user}'
+        return f'{self.user} {self.name} {os.path.basename(self.file.name)}'
 
 class Raster(models.Model):
     name = models.CharField(max_length=50)
@@ -94,7 +94,7 @@ class VectorData(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user} => {self.file}'
+        return f'{self.user} => {os.path.basename(self.file.name)}'
 
 class RasterData(models.Model):
     # file = models.OneToOneField(Raster,on_delete=models.CASCADE)
@@ -105,7 +105,7 @@ class RasterData(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user} => {self.file}'
+        return f'{self.user} => {os.path.basename(self.file.name)}'
 
 
 
