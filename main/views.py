@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.db.models.functions import Centroid
 
 from .models import RasterData,VectorData,Raster,Vector,Dataset
 import json
@@ -44,25 +45,6 @@ def login_request(request):
                     {"form":form})
 
 
-
-def get_my_shapes(request):
-    vector_data = VectorData.objects.all()
-
-    geojson = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": json.loads(data.properties),
-                "geometry": json.loads(data.geom.geojson)
-            }
-            for data in vector_data
-        ]
-    }
-
-    # Add the GeoJSON to the map
-    # L.geoJSON(geojson).addTo(map)
-
 def user(request):
     return render(
         request,
@@ -92,9 +74,27 @@ def download_page(request):
 
 
 def map(request):
+
+    vector_data = VectorData.objects.all()
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": json.loads(data.properties),
+                "geometry": json.loads(data.geom.geojson)
+            }
+            for data in vector_data
+        ]
+    }
+
     return render(
         request,
-        template_name='main/map.html'
+        template_name='main/map.html',
+        context={
+            'geojson':json.dumps(geojson)
+        }
     )
 
 @login_required
@@ -116,7 +116,6 @@ def createdata(request):
                 data[i] = feat.get(i)
             data = json.dumps(data)
 
-            print(dir(feat.geom))
             vector_data = VectorData.objects.create(
                 file=vector,
                 user=vector.user,
@@ -124,6 +123,9 @@ def createdata(request):
                 properties=data,
             )
             vector_data.save()
+
+            vector.created=True
+            vector.save(update_fields=['created'])
 
         messages.success(request, 'Vector data created successfully!')
     
@@ -147,3 +149,12 @@ def createdata(request):
 
     # Redirect to the same page
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+
+
+def deletedata(request):
+
+    return render(request,
+        template_name='',   
+    )

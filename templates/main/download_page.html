@@ -30,6 +30,7 @@
                 <th>Created at</th>
                 {% if dataname != "other" %}
                 <th>Create View</th>
+                <th>Delete View</th>
                 {% endif %}
               </tr>
             </thead>
@@ -40,11 +41,13 @@
                   <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
                   <td>{{ dataset.get_created_at }}</td>
                   {% if dataname != "other" %}
-                  <td>
-                    <a href="{% url 'main:createdata' %}?{{dataname}}_id={{dataset.id}}">Create data</a>
-                    
-                  </td>
-                    <!-- <td><a class="black waves-effect waves-light btn-small">Create</a></td> -->
+                    {% if dataset.created %}
+                      <td><a href="/map/"><i class="material-icons">map</i></a></td>
+                      <td><a href="{% url 'main:deletedata' %}?{{dataname}}_id={{dataset.id}}"><i class="material-icons">delete</i></a></td>
+                    {% else %}
+                      <td><a href="{% url 'main:createdata' %}?{{dataname}}_id={{dataset.id}}"><i class="material-icons">edit_location</i></a></td>
+                      <td><i class="material-icons">delete</i></td>
+                    {% endif %}
                   {% endif %}
                 </tr>
               {% endfor %}

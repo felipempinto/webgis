@@ -65,13 +65,14 @@ class Vector(models.Model):
     user = models.ForeignKey(User,related_name = 'owner_vector',on_delete=models.CASCADE)
     file = models.FileField(upload_to=upload_to_path('vector'),validators=[validate_file_extension_vector])
     # downloaded = models.IntegerField(default=0)
+    created = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def get_created_at(self):
         return humanize.naturaltime(self.created_at)
 
     def __str__(self):
-        return self.file.name
+        return f'{self.name}-{self.file.name}-{self.user}'
 
 class Raster(models.Model):
     name = models.CharField(max_length=50)
@@ -102,6 +103,9 @@ class RasterData(models.Model):
     path = models.CharField(max_length=300)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user} => {self.file}'
 
 
 

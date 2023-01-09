@@ -20,7 +20,8 @@ urlpatterns = [
     path("user/",views.user,name='user'),
     path("download/",views.download_page,name='download'),
     path("map/",views.map,name='map'),
-    path("createdata/",views.createdata,name='createdata')
+    path("createdata/",views.createdata,name='createdata'),
+    path("deletedata/",views.deletedata,name='deletedata')
     
 ]+ users_page
 
