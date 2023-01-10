@@ -6,12 +6,8 @@
 <!-- Create the map container element -->
 <div id="map"></div>
 
-<a href="/" id="refreshButton" class="waves-effect waves-light btn-small">Home</a>
-<a href="/" id="refreshButton" class="waves-effect waves-light btn-small">Home2</a>
-<!-- <button id="refreshButton">Go home</button> -->
-
-<!-- Tile layer select element -->
-
+<a class="home-button btn goto-homepage-button" href="{% url 'main:homepage' %}">Home</a>
+<button class="enable-sidenav-button">Menu</button>
 
 <ul id="slide-out" class="sidenav sidenav-fixed">
   <div class="container">
@@ -22,39 +18,75 @@
       <option value="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png">CartoDB Dark</option>
       <option value="https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg">Watercolor</option>
     </select>
-  </div>
-  {% for key, value in dataset.items %}
-      <li>
-          <div class="switch">
-              <label>
-              {{ key }}
-              <input type="checkbox" id="{{ key }}">
-              <span class="lever"></span>
-              </label>
-          </div>
-      </li>
-  {% endfor %}
-  
+    <h5>Select your dataset:</h5>
+    <div  id="geojson-layer-checkboxes">
+        {% for key, value in dataset.items %}
+            <label class="switch">
+                <input type="checkbox" id="{{ key }}" class="geojson-layer-checkbox">
+                <span class="slider round"></span> {{ key }}
+            </label>
+        {% endfor %}
+    </div>
 </ul>
 
 <style>
-   #map { 
-    height: 600px;
-    /* position:absolute; 
-    top:0; 
-    bottom:0; 
-    width:100%;  */
-  }
-
-   #refreshButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 400;
-  background-color: blanchedalmond;
-  color: black;
+    #map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
-</style>
+
+.home-button, .enable-sidenav-button {
+    position: absolute;
+    z-index: 1; /* Make sure the buttons appear on top of the map */
+}
+
+.home-button {
+    top: 20px;
+    /* left: 20px; */
+    right: 20px;
+}
+
+.enable-sidenav-button {
+    top: 40px;
+    right: 20px;
+}
+
+.sidenav {
+    width: 300px;
+    right: 0; /* Change sidenav position to right */
+    top: 64px; /* Position sidenav beneath the header */
+}
+
+/* Style the sidenav using Materialize styles */
+.sidenav .container {
+    padding: 0;
+}
+
+.sidenav h5 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sidenav select {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+/* Style the switch using Materialize styles */
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: #64b5f6;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: #fff;
+}
+ </style>
+
 
 
 <script>
@@ -102,36 +134,65 @@
     return color;
 }
 
-var layerGroup = L.layerGroup().addTo(map);
-"{% for key, value in dataset.items %}"
-    
-    var raw_data = "{{value|escapejs|safe}}";
-    console.log(raw_data)
-    var geojson = JSON.parse(raw_data);
+var geojsonLayers = [];
+    "{% for key, value in dataset.items %}"
+        var raw_data = "{{value|escapejs|safe}}";
+        var geojson = JSON.parse(raw_data);
+        var layer = L.geoJSON(geojson);
+        geojsonLayers.push({
+            "id": "{{ key }}",
+            "layer": layer,
+            "checkbox": document.getElementById("{{ key }}")
+        });
+    "{% endfor %}"
 
-    var color = getRandomColor();
-    var layer = L.geoJSON(geojson, {
-        style: function (feature) {
-            return {color: color};
-        }
-    }).addTo(layerGroup);
-"{% endfor %}"
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems);
-});
-"{% for key, value in dataset.items %}"
-    var layer = layerGroup.getLayers()["{{ loop.index }}"]; // you need to pass the index of the layer you want to get
-    document.getElementById('{{ key }}').addEventListener('change', function() {
-        if(this.checked) {
-            layerGroup.addLayer(layer);
-        } else {
-            layerGroup.removeLayer(layer);
-        }
+    geojsonLayers.forEach(function(gj) {
+        gj.checkbox.addEventListener("change", function() {
+            if (this.checked) {
+                gj.layer.addTo(map);
+            } else {
+                map.removeLayer(gj.layer);
+            }
+        });
     });
-"{% endfor %}"
+
+    var toggleButton = document.getElementById("sidenav-toggle");
+    var sidenav = document.getElementById("slide-out");
+
+    toggleButton.addEventListener("click", function() {
+        sidenav.classList.toggle("hidden");
+    });
+
+// var layerGroup = L.layerGroup().addTo(map);
+// "{% for key, value in dataset.items %}"
+    
+//     var raw_data = "{{value|escapejs|safe}}";
+//     console.log(raw_data)
+//     var geojson = JSON.parse(raw_data);
+
+//     var color = getRandomColor();
+//     var layer = L.geoJSON(geojson, {
+//         style: function (feature) {
+//             return {color: color};
+//         }
+//     }).addTo(layerGroup);
+// "{% endfor %}"
+
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     var elems = document.querySelectorAll('.sidenav');
+//     var instances = M.Sidenav.init(elems);
+// });
+// "{% for key, value in dataset.items %}"
+//     var layer = layerGroup.getLayers()["{{ loop.index }}"]; // you need to pass the index of the layer you want to get
+//     document.getElementById('{{ key }}').addEventListener('change', function() {
+//         if(this.checked) {
+//             layerGroup.addLayer(layer);
+//         } else {
+//             layerGroup.removeLayer(layer);
+//         }
+//     });
+// "{% endfor %}"
 
 L.control.zoom({ position: "bottomright" }).addTo(map);
 </script>

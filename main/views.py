@@ -72,27 +72,11 @@ def map(request):
     ]
     }
     )
-        # with open('data.geojson', 'w') as file:
-        #     json.dump(dataset[f.file], file)
-    
-    # vector_data = VectorData.objects.filter(user=request.user)
-    # geojson = {
-    #     "type": "FeatureCollection",
-    #     "features": [
-    #         {
-    #             "type": "Feature",
-    #             "properties": json.loads(data.properties),
-    #             "geometry": json.loads(data.geom.geojson)
-    #         }
-    #         for data in vector_data
-    #     ]
-    # }
 
     return render(
         request,
         template_name='main/map.html',
         context={
-            # 'geojson':json.dumps(geojson),
             'dataset':dataset,
         }
     )
