@@ -7,15 +7,43 @@
 <div id="map"></div>
 
 <a href="/" id="refreshButton" class="waves-effect waves-light btn-small">Home</a>
+<a href="/" id="refreshButton" class="waves-effect waves-light btn-small">Home2</a>
 <!-- <button id="refreshButton">Go home</button> -->
 
+<!-- Tile layer select element -->
+
+
+<ul id="slide-out" class="sidenav sidenav-fixed">
+  <div class="container">
+    <h5>Select the basemap:</h5>
+    <select id="tile-layer-select" class="select-class">
+      <option value="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">OpenStreetMap</option>
+      <option value="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png">OpenStreetMap DE</option>
+      <option value="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png">CartoDB Dark</option>
+      <option value="https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg">Watercolor</option>
+    </select>
+  </div>
+  {% for key, value in dataset.items %}
+      <li>
+          <div class="switch">
+              <label>
+              {{ key }}
+              <input type="checkbox" id="{{ key }}">
+              <span class="lever"></span>
+              </label>
+          </div>
+      </li>
+  {% endfor %}
+  
+</ul>
 
 <style>
    #map { 
-    position:absolute; 
+    height: 600px;
+    /* position:absolute; 
     top:0; 
     bottom:0; 
-    width:100%; 
+    width:100%;  */
   }
 
    #refreshButton {
@@ -28,27 +56,83 @@
 }
 </style>
 
+
 <script>
+  let config = {
+    minZoom: 1,
+    maxZoom: 20,
+    zoomControl: false, // zoom control off
+  };
+  // magnification with which the map will start
+  const zoom = 2;
+  // co-ordinates
+  const lat = 0;
+  const lng = 0
 
-  var raw_data = '{{geojson|escapejs|safe}}';
-  var geojson = JSON.parse(raw_data);
-</script>
+  // calling map
+  const map = L.map("map", config).setView([lat, lng], zoom);
+  // var map = L.map('map').setView([0, 0], 2);
 
-<!-- Initialize the map with Leaflet -->
-<script>
+  var tileLayer;
+    // Add the default tile layer to the map
+    var url = document.getElementById("tile-layer-select").value;
+    tileLayer = L.tileLayer(url, {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-  // Create the map
-  var map = L.map('map');
+    document.getElementById("tile-layer-select").addEventListener("change", function() {
+        var url = this.value;
+        map.removeLayer(tileLayer);
+        tileLayer = L.tileLayer(url, {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    });
 
-  // Set the initial view and zoom level
-  map.setView([51.505, -0.09], 2);
+//   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+// 	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+// }).addTo(map);
 
-  // Add a basemap layer
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-}).addTo(map);
 
-  // Add the GeoJSON layer to the map
-  L.geoJSON(geojson).addTo(map);
+  function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+var layerGroup = L.layerGroup().addTo(map);
+"{% for key, value in dataset.items %}"
+    
+    var raw_data = "{{value|escapejs|safe}}";
+    console.log(raw_data)
+    var geojson = JSON.parse(raw_data);
+
+    var color = getRandomColor();
+    var layer = L.geoJSON(geojson, {
+        style: function (feature) {
+            return {color: color};
+        }
+    }).addTo(layerGroup);
+"{% endfor %}"
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems);
+});
+"{% for key, value in dataset.items %}"
+    var layer = layerGroup.getLayers()["{{ loop.index }}"]; // you need to pass the index of the layer you want to get
+    document.getElementById('{{ key }}').addEventListener('change', function() {
+        if(this.checked) {
+            layerGroup.addLayer(layer);
+        } else {
+            layerGroup.removeLayer(layer);
+        }
+    });
+"{% endfor %}"
+
+L.control.zoom({ position: "bottomright" }).addTo(map);
 </script>
 {% endblock %}

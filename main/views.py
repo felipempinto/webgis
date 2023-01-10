@@ -54,6 +54,50 @@ def user(request):
     )
 
 @login_required(login_url='/login/')
+def map(request):
+    vector = Vector.objects.filter(user=request.user)
+
+    dataset = {}
+    for f in vector:
+        vector_data = VectorData.objects.filter(user=request.user).filter(file=f)
+        dataset[f.name] = json.dumps({
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": json.loads(data.properties),
+            "geometry": json.loads(data.geom.geojson)
+        } 
+        for data in vector_data
+    ]
+    }
+    )
+        # with open('data.geojson', 'w') as file:
+        #     json.dump(dataset[f.file], file)
+    
+    # vector_data = VectorData.objects.filter(user=request.user)
+    # geojson = {
+    #     "type": "FeatureCollection",
+    #     "features": [
+    #         {
+    #             "type": "Feature",
+    #             "properties": json.loads(data.properties),
+    #             "geometry": json.loads(data.geom.geojson)
+    #         }
+    #         for data in vector_data
+    #     ]
+    # }
+
+    return render(
+        request,
+        template_name='main/map.html',
+        context={
+            # 'geojson':json.dumps(geojson),
+            'dataset':dataset,
+        }
+    )
+
+@login_required(login_url='/login/')
 def download_page(request):
     user = request.user
 
@@ -80,48 +124,6 @@ def download_page(request):
             'df':dataset_form
             }
             )
-
-@login_required(login_url='/login/')
-def map(request):
-    vector = Vector.objects.filter(user=request.user)
-
-    dataset = {}
-    for f in vector:
-        vector_data2 = VectorData.objects.filter(user=request.user).filter(file=f)
-        dataset[f.file] = {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": json.loads(data.properties),
-            "geometry": json.loads(data.geom.geojson)
-        }
-        for data in vector_data2
-    ]
-    }
-    
-
-    vector_data = VectorData.objects.filter(user=request.user)
-    geojson = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": json.loads(data.properties),
-                "geometry": json.loads(data.geom.geojson)
-            }
-            for data in vector_data
-        ]
-    }
-
-    return render(
-        request,
-        template_name='main/map.html',
-        context={
-            'geojson':json.dumps(geojson),
-            'dataset':dataset,
-        }
-    )
 
 @login_required(login_url='/login/')
 def createdata(request):
@@ -177,25 +179,34 @@ def delete(model,request):
     else:
         return False
 
-@login_required(login_url='/login/')
-def deleteview(request,source,dataid):
-
-    if source=='raster':
-        model = get_object_or_404(RasterData, pk=dataid)
-    elif source=='vector':
-        model = get_object_or_404(VectorData, pk=dataid)
-
-    delete(model,request)
-    return redirect("main:download")
-
-def deletedata(request,source,dataid):
+def get_model(source,dataid,request,view=False):
     if source=='raster':
         model = get_object_or_404(Raster, pk=dataid)
+        if view:
+            model = RasterData.objects.filter(user=request.user).filter(file=model)
     elif source=='vector':
         model = get_object_or_404(Vector, pk=dataid)
+        if view:
+            model.created=False
+            model.save(update_fields=['created'])
+            # model = get_object_or_404(VectorData, file=model)
+            model = VectorData.objects.filter(user=request.user).filter(file=model)
     elif source=='other':
         model = get_object_or_404(Dataset, pk=dataid)
 
+    return model
+
+@login_required(login_url='/login/')
+def deleteview(request,source,dataid):
+    models = get_model(source,dataid,request,view=True)
+
+    print("UPDATED")
+    for model in models:
+        delete(model,request)
+    return redirect("main:download")
+
+def deletedata(request,source,dataid):
+    model = get_model(source,request,dataid)
 
     delete(model,request)
     return redirect("main:download")
