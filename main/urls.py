@@ -21,7 +21,9 @@ urlpatterns = [
     path("download/",views.download_page,name='download'),
     path("map/",views.map,name='map'),
     path("createdata/",views.createdata,name='createdata'),
-    path("deletedata/",views.deletedata,name='deletedata')
+    path("deletedata/<str:source>/<int:dataid>/",views.deletedata,name='deletedata'),
+    path("deleteview/<str:source>/<int:dataid>/",views.deleteview,name='deleteview'),
+    path("upload-data/<source>/",views.uploaddata,name='uploaddata'),
     
 ]+ users_page
 

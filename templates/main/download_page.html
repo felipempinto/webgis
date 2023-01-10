@@ -26,8 +26,9 @@
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Download</th>
                 <th>Created at</th>
+                <th>Download</th>
+                <th>Delete file</th>
                 {% if dataname != "other" %}
                 <th>Create View</th>
                 <th>Delete View</th>
@@ -38,12 +39,13 @@
               {% for dataset in dataset_all %}
                 <tr>
                   <td>{{ dataset.name }}</td>
-                  <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
                   <td>{{ dataset.get_created_at }}</td>
+                  <td><a href="{{ dataset.file.url }}" download><i class="material-icons">file_download</i></a></td>
+                  <td><a href="{% url 'main:deletedata' source=dataname dataid=dataset.id %}"><i class="material-icons">delete_forever</i></a></td>
                   {% if dataname != "other" %}
                     {% if dataset.created %}
                       <td><a href="/map/"><i class="material-icons">map</i></a></td>
-                      <td><a href="{% url 'main:deletedata' %}?{{dataname}}_id={{dataset.id}}"><i class="material-icons">delete</i></a></td>
+                      <td><a href="{% url 'main:deleteview' source=dataname dataid=dataset.id %}"><i class="material-icons">delete</i></a></td>
                     {% else %}
                       <td><a href="{% url 'main:createdata' %}?{{dataname}}_id={{dataset.id}}"><i class="material-icons">edit_location</i></a></td>
                       <td><i class="material-icons">delete</i></td>
@@ -54,10 +56,36 @@
             </tbody>
           </table>
         {% else %}
-          <p>You have no raster datasets.</p>
+          <p>You have no {{dataname}} datasets.</p>
         {% endif %}
-    </div>
+        <div class="center" style="padding-top: 70px;">
 
+          <div class="container">
+            <div class="input-field">
+            <h3 class="center">Upload your file:</h3>
+              <form method="post" enctype="multipart/form-data" action="{% url 'main:uploaddata' source=dataname %}">
+              {% csrf_token %}
+              <h5 class="center">Add a name:</h5>
+                <div class="container">
+                  <input id="name-{{dataname}}" type="text" name="name-{{dataname}}" maxlength="50" required>
+                </div>
+                
+                <div class="pad-div">
+                  <span class="btn btn-file">
+                    Choose a file
+                    <input type="file" name="file-{{dataname}}" required>
+                  </span>
+                </div>
+                
+                <div class="pad-div">
+                  <button class="btn" type="submit"><i class="material-icons left">file_upload</i>Upload</button>
+                </div>
+                
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>      
   {% endfor %}
 </div>
 

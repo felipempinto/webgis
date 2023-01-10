@@ -7,9 +7,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import GEOSGeometry
-from django.contrib.gis.db.models.functions import Centroid
+from django.http import HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 
 from .models import RasterData,VectorData,Raster,Vector,Dataset
+from .forms import DatasetUploadForm,VectorUploadForm,RasterUploadForm
 import json,os
 
 def homepage(request):
@@ -51,13 +53,17 @@ def user(request):
         template_name='main/user_page.html'
     )
 
-
+@login_required(login_url='/login/')
 def download_page(request):
     user = request.user
 
     raster_datasets = Raster.objects.filter(user=user)
     vector_datasets = Vector.objects.filter(user=user)
     other_datasets = Dataset.objects.filter(user=user)
+
+    raster_form = RasterUploadForm(instance=request.user)
+    vector_form = VectorUploadForm(instance=request.user)
+    dataset_form = DatasetUploadForm(instance=request.user)
 
     data = {
         "raster": raster_datasets, 
@@ -68,10 +74,14 @@ def download_page(request):
     return render(
             request, 
             "main/download_page.html", 
-            {'data':data}
+            {'data':data,
+            'rf':raster_form,
+            'vf':vector_form,
+            'df':dataset_form
+            }
             )
 
-@login_required
+@login_required(login_url='/login/')
 def map(request):
     vector = Vector.objects.filter(user=request.user)
 
@@ -113,7 +123,7 @@ def map(request):
         }
     )
 
-@login_required
+@login_required(login_url='/login/')
 def createdata(request):
     
     vector_id = request.GET.get('vector_id')
@@ -153,24 +163,58 @@ def createdata(request):
             messages.error(request,"Error while trying to create view")
             return redirect('main:homepage')
 
-        # raster_data = RasterData.objects.create(
-        #     file=raster.file,
-        #     geom=raster.get_geometry(),
-        #     properties=raster.get_properties(),
-        # )
-
-        # raster_data.save()
-
-        messages.success(request, 'raster data created successfully!')
+        # messages.success(request, 'raster data created successfully!')
+        messages.info(request,"Resource not ready yet!")
 
     # Redirect to the same page
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+def delete(model,request):
+    if model.user==request.user:
+        model.delete()
+        return True
+    else:
+        return False
+
+@login_required(login_url='/login/')
+def deleteview(request,source,dataid):
+
+    if source=='raster':
+        model = get_object_or_404(RasterData, pk=dataid)
+    elif source=='vector':
+        model = get_object_or_404(VectorData, pk=dataid)
+
+    delete(model,request)
+    return redirect("main:download")
+
+def deletedata(request,source,dataid):
+    if source=='raster':
+        model = get_object_or_404(Raster, pk=dataid)
+    elif source=='vector':
+        model = get_object_or_404(Vector, pk=dataid)
+    elif source=='other':
+        model = get_object_or_404(Dataset, pk=dataid)
 
 
-def deletedata(request):
+    delete(model,request)
+    return redirect("main:download")
 
-    return render(request,
-        template_name='',   
-    )
+@login_required(login_url='/login/')
+def uploaddata(request,source):
+
+    if request.method == 'POST':
+        file_name = request.POST.get(f'name-{source}')
+        uploaded_file = request.FILES[f'file-{source}']
+        
+        if source == 'raster':
+            raster = Raster(name=file_name, file=uploaded_file,user=request.user)
+            raster.save()
+        elif source == 'vector':
+            vector = Vector(name=file_name, file=uploaded_file,user=request.user)
+            vector.save()
+        else:
+            dataset = Dataset(name=file_name, file=uploaded_file,user=request.user)
+            dataset.save()
+
+    return redirect('main:download')
