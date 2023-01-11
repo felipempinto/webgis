@@ -3,18 +3,19 @@
 {% load static %}
 
 <div class="navbar-fixed">
-    <nav class="red">
+    <nav class="nav-map">
         <div class="nav-wrapper">
-          <a href="#" class="brand-logo center hide-on-med-and-down">Logo</a>
-          <ul id="nav-mobile" class="right">
-            <li><a href="{% url 'main:homepage' %}">Home</a></li>
-            <!-- <li><button id="sidenav-toggle"><i class="material-icons">menu</i></button></li> -->
-            <li><a id="sidenav-toggle" href="#"><i class="material-icons">menu</i></a></li>
-          </ul>
+          <a href="#" class="brand-logo center hide-on-med-and-down">
+            <img id="logo" class="responsive-img" src="{% static 'imgs/Logo.png'%}" alt="Logo" style="max-height:65px;">
+            </a>
+            <ul class="right">
+                <li><a href="{% url 'main:homepage' %}">Home</a></li>
+                <li><a id="sidenav-toggle" href="#"><i class="material-icons">menu</i></a></li>
+            </ul>
         </div>
     </nav>
 </div>
-        
+
 <div id="map"></div>
 
 <ul id="slide-out" class="sidenav sidenav-container">
@@ -24,6 +25,7 @@
       <option value="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png">OpenStreetMap DE</option>
       <option value="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png">CartoDB Dark</option>
       <option value="https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg">Watercolor</option>
+      <option value="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}">WorldImagery</option>
     </select>
     <h5>Select your dataset:</h5>
     <div class="container">
@@ -42,33 +44,33 @@
 
 <style>
     nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-}
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+    }
 
-#map {
-  position: fixed;
-  top: 60px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
-}
+    #map {
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+    }
 
-#slide-out {
-    overflow: hidden;
-}
+    #slide-out {
+        overflow: hidden;
+    }
 
-.sidenav-container {
-    position: fixed;
-    top: 65px;
-    bottom: 0;
-    width: 300px;
-    overflow: hidden;
-}
+    .sidenav-container {
+        position: fixed;
+        top: 65px;
+        bottom: 0;
+        width: 300px;
+        overflow: hidden;
+    }
     .switch-container {
         display: flex;
         align-items: center;
@@ -87,7 +89,6 @@
   const zoom = 2;
   const lat = 0;
   const lng = 0
-
   const map = L.map("map", config).setView([lat, lng], zoom);
 
   L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -120,13 +121,25 @@
     "{% for key, value in dataset.items %}"
         var raw_data = "{{value|escapejs|safe}}";
         var geojson = JSON.parse(raw_data);
+        var color = getRandomColor();
         var layer = L.geoJSON(geojson, {
+        style: {
+            fillOpacity: 0,
+            fillColor: color,
+            color: color
+        },
         onEachFeature: function(feature, layer) {
-            var popupContent = "";
+            var popupContent = "<table class='striped'>";
             for (var key in feature.properties) {
-                popupContent += "<b>" + key + ":</b> " + feature.properties[key] + "<br>";
+                // popupContent += 
+                
+                
+                popupContent += "<tr><td><b>" + key + "</b></td><td>" + feature.properties[key] + "</td></tr>";
             }
+            popupContent += "</table>"
             layer.bindPopup(popupContent);
+            
+            
         }
     });
         var bounds = layer.getBounds();
