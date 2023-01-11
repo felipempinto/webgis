@@ -77,6 +77,7 @@ def map(request):
         request,
         template_name='main/map.html',
         context={
+            'navfooter':False,
             'dataset':dataset,
         }
     )

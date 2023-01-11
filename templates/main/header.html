@@ -26,7 +26,7 @@
     }
     
     main {
-      padding-top: 70px;
+      /* padding-top: 70px; */
       flex: 1 0 auto;
     }
   
@@ -120,7 +120,9 @@
   </style>
 </head>
 <body>
-{% include "main/includes/navbar.html" %}
+  {% if navfooter %}
+    {% include "main/includes/navbar.html" %}
+  {% endif %}
 
 <header>{% include "main/includes/messages.html" %}</header>
   
@@ -128,8 +130,9 @@
   {% block content %}
   {% endblock %}
 </main>  
-  
-  {% include "main/includes/footer.html" %}
+  {% if navfooter %}
+    {% include "main/includes/footer.html" %}
+  {% endif %}
 
 </body>
 
