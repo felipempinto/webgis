@@ -6,6 +6,7 @@
       <!-- Compiled and minified CSS -->
       <link rel="stylesheet" href="{% static 'materialize/css/materialize.css' %}">
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Forum">
       <link rel="icon" href="/static/imgs/Logo.png">
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -36,8 +37,11 @@
     }
 
     .nav-map {
-      background-color:darkred;
-      color: black;
+      /* background-color:rgb(24, 21, 21);
+      color: black; */
+      background: rgb(0,0,0);
+      background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(120,120,120,1) 100%);
+      font-family: "Forum", sans-serif;
     }
   
     footer {

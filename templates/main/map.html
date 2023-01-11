@@ -5,8 +5,8 @@
 <div class="navbar-fixed">
     <nav class="nav-map">
         <div class="nav-wrapper">
-          <a href="#" class="brand-logo center hide-on-med-and-down">
-            <img id="logo" class="responsive-img" src="{% static 'imgs/Logo.png'%}" alt="Logo" style="max-height:65px;">
+          <a href="/map" class="brand-logo left hide-on-med-and-down">
+            <img id="logo" class="responsive-img" src="{% static 'imgs/Logo-removebg.png'%}" alt="Logo" style="max-height:65px;">
             </a>
             <ul class="right">
                 <li><a href="{% url 'main:homepage' %}">Home</a></li>
@@ -18,8 +18,8 @@
 
 <div id="map"></div>
 
-<ul id="slide-out" class="sidenav sidenav-container">
-    <h5>Select the basemap:</h5>
+<ul id="slide-out" class="sidenav sidenav-container" style='font-family: "Forum", sans-serif;'>
+    <h5 class="center"><b>Select the basemap:</b></h5>
     <select id="tile-layer-select" class="select-class">
       <option value="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">OpenStreetMap</option>
       <option value="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png">OpenStreetMap DE</option>
@@ -27,19 +27,21 @@
       <option value="https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg">Watercolor</option>
       <option value="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}">WorldImagery</option>
     </select>
-    <h5>Select your dataset:</h5>
-    <div class="container">
+    <h5 class="center"><b>Select your vector dataset:</b></h5>
+    <div class="divider"></div>
+    <!-- <div class="container"> -->
         {% for key, value in dataset.items %}
         <div class="switch-container">
-            <a class="btn-floating btn-small waves-effect waves-light" id="{{ key }}_icon"><i class="material-icons">center_focus_strong</i></a>
+            <a href="#" id="{{ key }}_icon"><i class="material-icons">center_focus_strong</i></a>
             <label class="switch">
                 <input type="checkbox" id="{{ key }}" class="geojson-layer-checkbox">
                 <span class="slider round"></span> 
             </label>
             <label for="{{ key }}">{{ key }}</label>
         </div>
+        <div class="divider"></div>
         {% endfor %}
-    </div>
+    <!-- </div> -->
 </ul>
 
 <style>
@@ -69,17 +71,23 @@
         top: 65px;
         bottom: 0;
         width: 300px;
-        overflow: hidden;
+        overflow: hidden; 
     }
     .switch-container {
+        margin: 10px 0;
         display: flex;
         align-items: center;
+        width: 100%;
     }
 
     .switch-container a {
         margin-right: 10px;
+        text-align: center;
     }
-
+    .switch-container label {
+        margin: 0;
+    }
+    
  </style>
 
 
@@ -131,9 +139,6 @@
         onEachFeature: function(feature, layer) {
             var popupContent = "<table class='striped'>";
             for (var key in feature.properties) {
-                // popupContent += 
-                
-                
                 popupContent += "<tr><td><b>" + key + "</b></td><td>" + feature.properties[key] + "</td></tr>";
             }
             popupContent += "</table>"

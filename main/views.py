@@ -191,7 +191,7 @@ def deleteview(request,source,dataid):
     return redirect("main:download")
 
 def deletedata(request,source,dataid):
-    model = get_model(source,request,dataid)
+    model = get_model(source,dataid,request)
 
     delete(model,request)
     return redirect("main:download")
