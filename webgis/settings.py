@@ -29,6 +29,8 @@ ALLOWED_HOSTS = [
     'webgis.felipemp.com'
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://webgis.felipemp.com']
+
 
 # Application definition
 
