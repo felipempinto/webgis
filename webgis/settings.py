@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY_WEBGIS")
 DEBUG = os.environ['DEBUG'] == 'True'
 
 ALLOWED_HOSTS = [
-
+    'webgis.felipemp.com'
 ]
 
 
@@ -89,7 +89,7 @@ DATABASES = {
          'USER': os.environ.get('DB_USER_WEBGIS'),
          'PASSWORD': os.environ.get('DB_PASSWORD_WEBGIS'),
          'HOST': os.environ.get("DB_HOST_WEBGIS"),
-         'PORT': '5432',
+         'PORT': os.environ.get("DB_PORT_WEBGIS"),
     },
 }
 
