@@ -18,7 +18,7 @@
 
 <div id="map"></div>
 
-<ul id="slide-out" class="sidenav sidenav-container" style='font-family: "Forum", sans-serif;'>
+<ul id="slide-out" class="sidenav sidenav-container sidenav-fixed" style='font-family: "Forum", sans-serif;'>
     <h5 class="center"><b>Select the basemap:</b></h5>
     <select id="tile-layer-select" class="select-class">
       <option value="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">OpenStreetMap</option>
@@ -28,25 +28,47 @@
       <option value="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}">WorldImagery</option>
     </select>
     <h5 class="center"><b>Select your vector dataset:</b></h5>
-    <div class="divider"></div>
-    <!-- <div class="container"> -->
-        {% for key, value in dataset.items %}
-        <div class="switch-container">
-            <a href="#" id="{{ key }}_icon"><i class="material-icons">center_focus_strong</i></a>
-            <label class="switch">
-                <input type="checkbox" id="{{ key }}" class="geojson-layer-checkbox">
-                <span class="slider round"></span> 
-            </label>
-            <label for="{{ key }}">{{ key }}</label>
-            
-            <input class="color-picker" type="color" id="{{ key }}-color-picker" value="#ff0000">
-        </div>
-        <div class="divider"></div>
-        {% endfor %}
-    <!-- </div> -->
+    
+        <ul class="collapsible collapsible-accordion">
+            {% for key, value in dataset.items %}
+            <li>
+            <div style="display: flex; align-items: center;">
+                <a href="#"><i class="collapsible-header material-icons tiny arrow-right">keyboard_arrow_right</i></a>
+                <a href="#" class="center-focus-strong" ><i id="{{ key }}_icon" class="material-icons tiny">center_focus_strong</i></a>                
+                <label style="position: relative; top: 10px; padding-left: 10px;">
+                    <input type="checkbox" id="{{ key }}">
+                    <span></span>  
+                </label>
+                <label for="{{ key }}" class="black-text ">{{ key }}</label>
+            </div>
+                
+            <div class="collapsible-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col s6"><label for="{{ key }}-fillcolor-picker">Fill Color</label></div>
+                        <div class="col s6"><input class="color-picker" type="color" id="{{ key }}-fillcolor-picker" value="#ff0000"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6"><label for="{{ key }}-color-picker">Line Color</label></div>
+                        <div class="col s6 right"><input class="color-picker" type="color" id="{{ key }}-color-picker" value="#ff0000"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6"><label for="{{ key }}-fill-opacity">Fill Opacity</label></div>
+                        <div class="col s6"><input class="range-picker" type="range" id="{{ key }}-fill-opacity" min="0" max="1" step="0.1" value="0"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6"><label for="{{ key }}-line-size">Line Size</label></div>
+                        <div class="col s6"><input class="range-picker" type="range" id="{{ key }}-line-size" min="1" max="10" step="1" value="1"></div>
+                    </div>
+                </div>
+            </div>
+            </li>
+            {% endfor %}
+        </ul>
 </ul>
 
 <style>
+    
     nav {
         position: fixed;
         top: 0;
@@ -68,6 +90,14 @@
         overflow: hidden;
     }
 
+    .sidenav{
+    padding: 0;
+    }
+
+    .sidenav li{
+    margin-bottom: 0;
+    }
+
     .sidenav-container {
         position: fixed;
         top: 65px;
@@ -75,26 +105,29 @@
         width: 300px;
         overflow: hidden; 
     }
-    .switch-container {
-        margin: 10px 0;
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-
-    .switch-container a {
-        margin-right: 10px;
-        text-align: center;
-    }
-    .switch-container label {
-        margin: 0;
-    }
-    
  </style>
 
 
 
 <script>
+
+    const collapsibleHeader = document.querySelectorAll('.collapsible-header')
+  collapsibleHeader.forEach(header => header.addEventListener('click', (event) => {
+    event.target.innerHTML === "keyboard_arrow_right" ? event.target.innerHTML = "keyboard_arrow_down" : event.target.innerHTML = "keyboard_arrow_right"
+  }))
+  
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems, {
+        onOpenStart: function(el) {
+            // Your code here
+        },
+        onCloseStart: function(el) {
+            // Your code here
+        },
+    });
+});
+
   let config = {minZoom: 1,maxZoom: 20,zoomControl: false, };
   const zoom = 2;
   const lat = 0;
@@ -132,12 +165,14 @@
         var raw_data = "{{value|escapejs|safe}}";
         var geojson = JSON.parse(raw_data);
         // var color = getRandomColor();
+        var fillColor = '#000000'
         var color = '#ff0000'
         var layer = L.geoJSON(geojson, {
         style: {
             fillOpacity: 0,
-            fillColor: color,
-            color: color
+            fillColor: fillColor,
+            color: color,
+            weight:1
         },
         onEachFeature: function(feature, layer) {
             var popupContent = "<table class='striped'>";
@@ -198,25 +233,37 @@
     });
 }); 
 
-    // const colorPicker = document.getElementById("color-picker");
-    //     colorPicker.addEventListener("change", function() {
-    //         const color = colorPicker.value;
-    //         // do something with the color value
-    //     });
-
     geojsonLayers.forEach(function(gj) {
     const colorPickerId = gj.id + "-color-picker";
     const colorPicker = document.getElementById(colorPickerId);
     colorPicker.addEventListener("change", function() {
         const color = colorPicker.value;
         gj.layer.setStyle({
-            fillColor: color,
             color: color,
         });
     });
-});
+    const fillColorPickerId = gj.id + "-fillcolor-picker";
+    const fillColorPicker = document.getElementById(fillColorPickerId);
+    fillColorPicker.addEventListener("change", function() {
+        const fillColor = fillColorPicker.value;
+        gj.layer.setStyle({
+            fillColor: fillColor,
+        });
+    });
+    const fillOpacityInput = document.getElementById(gj.id + "-fill-opacity");
+    fillOpacityInput.addEventListener("change", function() {
+        const fillOpacity = fillOpacityInput.value;
+        gj.layer.setStyle({fillOpacity: fillOpacity});
+    });
 
-    
+    const lineSizeInput = document.getElementById(gj.id + "-line-size");
+    lineSizeInput.addEventListener("change", function() {
+        const lineSize = lineSizeInput.value;
+        gj.layer.setStyle({weight: lineSize});
+    });
+    });
+
+
 
 </script>
 {% endblock %}
