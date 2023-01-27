@@ -39,7 +39,7 @@
             </label>
             <label for="{{ key }}">{{ key }}</label>
             
-            <input type="color" id="color-picker" value="#ff0000">
+            <input class="color-picker" type="color" id="{{ key }}-color-picker" value="#ff0000">
         </div>
         <div class="divider"></div>
         {% endfor %}
@@ -95,12 +95,6 @@
 
 
 <script>
-    const colorPicker = document.getElementById("color-picker");
-    colorPicker.addEventListener("change", function() {
-        const color = colorPicker.value;
-        // do something with the color value
-    });
-
   let config = {minZoom: 1,maxZoom: 20,zoomControl: false, };
   const zoom = 2;
   const lat = 0;
@@ -124,20 +118,21 @@
     });
 
 
-  function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
+//   function getRandomColor() {
+//     var letters = '0123456789ABCDEF';
+//     var color = '#';
+//     for (var i = 0; i < 6; i++) {
+//         color += letters[Math.floor(Math.random() * 16)];
+//     }
+//     return color;
+// }
 
     var geojsonLayers = [];
     "{% for key, value in dataset.items %}"
         var raw_data = "{{value|escapejs|safe}}";
         var geojson = JSON.parse(raw_data);
-        var color = getRandomColor();
+        // var color = getRandomColor();
+        var color = '#ff0000'
         var layer = L.geoJSON(geojson, {
         style: {
             fillOpacity: 0,
@@ -201,17 +196,25 @@
             toggleButton.classList.add("sidenav-open");
         }
     });
-});
+}); 
 
-    document.getElementById("color-picker").addEventListener("change", function() {
-    var newColor = this.value;
+    // const colorPicker = document.getElementById("color-picker");
+    //     colorPicker.addEventListener("change", function() {
+    //         const color = colorPicker.value;
+    //         // do something with the color value
+    //     });
+
     geojsonLayers.forEach(function(gj) {
+    const colorPickerId = gj.id + "-color-picker";
+    const colorPicker = document.getElementById(colorPickerId);
+    colorPicker.addEventListener("change", function() {
+        const color = colorPicker.value;
         gj.layer.setStyle({
-            fillColor: newColor,
-            color: newColor,
+            fillColor: color,
+            color: color,
         });
     });
-    });
+});
 
     
 
