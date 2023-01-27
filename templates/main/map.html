@@ -38,6 +38,8 @@
                 <span class="slider round"></span> 
             </label>
             <label for="{{ key }}">{{ key }}</label>
+            <!-- <h5 class="center"><b>Select the color of your dataset:</b></h5> -->
+            <input type="color" id="color-picker" value="#ff0000">
         </div>
         <div class="divider"></div>
         {% endfor %}
@@ -93,6 +95,12 @@
 
 
 <script>
+    const colorPicker = document.getElementById("color-picker");
+    colorPicker.addEventListener("change", function() {
+        const color = colorPicker.value;
+        // do something with the color value
+    });
+
   let config = {minZoom: 1,maxZoom: 20,zoomControl: false, };
   const zoom = 2;
   const lat = 0;
@@ -194,6 +202,18 @@
         }
     });
 });
+
+    document.getElementById("color-picker").addEventListener("change", function() {
+    var newColor = this.value;
+    geojsonLayers.forEach(function(gj) {
+        gj.layer.setStyle({
+            fillColor: newColor,
+            color: newColor,
+        });
+    });
+    });
+
+    
 
 </script>
 {% endblock %}

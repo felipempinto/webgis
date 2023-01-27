@@ -28,6 +28,9 @@ DEBUG = os.environ['DEBUG'] == 'True'
 ALLOWED_HOSTS = [
     'webgis.felipemp.com'
 ]
+LOCAL = os.environ.get("LOCAL") == "True"
+if LOCAL:
+    ALLOWED_HOSTS.append("127.0.0.1")
 
 CSRF_TRUSTED_ORIGINS = ['https://webgis.felipemp.com']
 
